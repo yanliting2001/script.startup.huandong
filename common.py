@@ -40,6 +40,39 @@ def notify(msg='', title='欢动影院', delay=2000, image=''):
                         (title, str(msg), delay, image))
 
 
+def create_listitems(data=None):
+    if not data:
+        return []
+    itemlist = []
+    for (count, result) in enumerate(data):
+        listitem = xbmcgui.ListItem('%s' % (str(count)))
+        for (key, value) in result.iteritems():
+            if not value:
+                continue
+            value = unicode(value)
+            if key.lower() in ["name", "label"]:
+                listitem.setLabel(value)
+            elif key.lower() in ["label2"]:
+                listitem.setLabel2(value)
+            elif key.lower() in ["title"]:
+                listitem.setLabel(value)
+                listitem.setInfo('video', {key.lower(): value})
+            elif key.lower() in ["thumb"]:
+                listitem.setThumbnailImage(value)
+                listitem.setArt({key.lower(): value})
+            elif key.lower() in ["icon"]:
+                listitem.setIconImage(value)
+                listitem.setArt({key.lower(): value})
+            elif key.lower() in ["path"]:
+                listitem.setPath(path=value)
+            elif key.lower() in ["poster", "banner", "fanart"]:
+                listitem.setArt({key.lower(): value})
+            listitem.setProperty('%s' % (key), value)
+        listitem.setProperty("index", str(count))
+        itemlist.append(listitem)
+    return itemlist
+
+
 def print_exc():
     traceback.print_exc()
 
