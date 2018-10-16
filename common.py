@@ -125,3 +125,9 @@ def check_multiclick(f):
         args[0].multiclick = time.time()
         return f(*args)
     return wrapper
+
+
+def get_json_file(filename):
+    with open(filename, 'r') as f:
+        data = simplejson.load(f)
+        return data
