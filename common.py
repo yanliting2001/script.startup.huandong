@@ -120,7 +120,7 @@ def check_multiclick(f):
     """
     def wrapper(*args):
         if args[0].multiclick > 0:
-            if time.time() - args[0].multiclick <= 1:
+            if time.time() - args[0].multiclick <= 0.3:
                 return
         args[0].multiclick = time.time()
         return f(*args)
