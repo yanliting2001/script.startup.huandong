@@ -19,6 +19,8 @@ C_LEFTLIST_CLOUD_CATEGORIES = 300102
 C_LIST_LOCAL_MOVIE = 200002
 C_LIST_CLOUD_MOVIE = 300001
 C_LIST_ACCOUNT_DOWNLOAD = 400001
+C_LIST_DOWNLOAD_STATUS = 400002
+C_LIST_DOWNLOAD_DEL = 400003
 ADDON = xbmcaddon.Addon()
 ADDON_ID = ADDON.getAddonInfo('id')
 ADDON_PATH = ADDON.getAddonInfo('path').decode("utf-8")
@@ -44,6 +46,7 @@ class WindowHome(WindowXML, DialogBaseInfo):
             self.set_cloud_movie_list()
             self.isLaunched = True
         self.set_download_list_progress()
+        self.set_download_manager_list()
 
     def onAction(self, action):
         if (action.getId() == 10 or action.getId() == 92):
@@ -55,6 +58,10 @@ class WindowHome(WindowXML, DialogBaseInfo):
     def onClick(self, control_id):
         super(WindowHome, self).onClick(control_id)
         ch.serve(control_id, self)
+
+    def onFocus(self, control_id):
+        super(WindowHome, self).onFocus(control_id)
+        ch.serve_focus(control_id, self)
 
     @check_multiclick
     @ch.action("up", str(C_LEFTLIST_LOCAL_CATEGORIES))
@@ -79,6 +86,68 @@ class WindowHome(WindowXML, DialogBaseInfo):
             self.cloud_filter_pos = pos
             item = filter_container.getSelectedItem()
             self.cloud_filter_up_down(item)
+
+    @ch.action("up", str(C_LIST_DOWNLOAD_STATUS))
+    def download_status_list_move_up(self):
+        status = self.listitem.getProperty("DownloadStatus")
+        pos = self.control.getSelectedPosition()
+        if status == "done":
+            if pos == 0:
+                xbmc.executebuiltin('Control.Move({0},1)'.format(C_LIST_DOWNLOAD_STATUS))
+            else:
+                xbmc.executebuiltin('Control.Move({0},-1)'.format(C_LIST_DOWNLOAD_STATUS))
+
+    @ch.action("down", str(C_LIST_DOWNLOAD_STATUS))
+    def download_status_list_move_down(self):
+        status = self.listitem.getProperty("DownloadStatus")
+        max_pos = self.control.size() - 1
+        pos = self.control.getSelectedPosition()
+        if status == "done":
+            if pos == max_pos:
+                xbmc.executebuiltin('Control.Move({0},-1)'.format(C_LIST_DOWNLOAD_STATUS))
+            else:
+                xbmc.executebuiltin('Control.Move({0},1)'.format(C_LIST_DOWNLOAD_STATUS))
+
+    @ch.action("up", str(C_LIST_DOWNLOAD_DEL))
+    def download_del_list_move_up(self):
+        status = self.listitem.getProperty("DownloadStatus")
+        pos = self.control.getSelectedPosition()
+        if status == "done":
+            if pos == 0:
+                xbmc.executebuiltin('Control.Move({0},1)'.format(C_LIST_DOWNLOAD_DEL))
+            else:
+                xbmc.executebuiltin('Control.Move({0},-1)'.format(C_LIST_DOWNLOAD_DEL))
+
+    @ch.action("down", str(C_LIST_DOWNLOAD_DEL))
+    def download_del_list_move_down(self):
+        status = self.listitem.getProperty("DownloadStatus")
+        max_pos = self.control.size() - 1
+        pos = self.control.getSelectedPosition()
+        if status == "done":
+            if pos == max_pos:
+                xbmc.executebuiltin('Control.Move({0},-1)'.format(C_LIST_DOWNLOAD_DEL))
+            else:
+                xbmc.executebuiltin('Control.Move({0},1)'.format(C_LIST_DOWNLOAD_DEL))
+
+    @ch.click(C_LIST_DOWNLOAD_STATUS)
+    def switch_download_status(self):
+        status = self.listitem.getProperty("DownloadStatus")
+        if status == "ing":
+            self.listitem.setProperty("DownloadStatus", "pause")
+        elif status == "pause":
+            self.listitem.setProperty("DownloadStatus", "ing")
+
+    @ch.focus(C_LIST_DOWNLOAD_STATUS)
+    def status_list_change_pos(self):
+        control = self.getControl(C_LIST_DOWNLOAD_DEL)
+        pos = control.getSelectedPosition()
+        self.control.selectItem(pos)
+
+    @ch.focus(C_LIST_DOWNLOAD_DEL)
+    def del_list_change_pos(self):
+        control = self.getControl(C_LIST_DOWNLOAD_STATUS)
+        pos = control.getSelectedPosition()
+        self.control.selectItem(pos)
 
     def local_filter_up_down(self, item):
         self.local_filter = item.getProperty("value")
@@ -148,6 +217,26 @@ class WindowHome(WindowXML, DialogBaseInfo):
             {"label": u"侏罗纪公园",
              "ProgressPercent": "98"}]
         self.set_container(C_LIST_ACCOUNT_DOWNLOAD, items)
+
+    @run_async
+    def set_download_manager_list(self):
+        items = [
+            {"label": "75%",
+             "DownloadStatus": "ing"},
+            {"label": "60%",
+             "DownloadStatus": "ing"},
+            {"label": "100%",
+             "DownloadStatus": "done"},
+            {"label": "98%",
+             "DownloadStatus": "ing"},
+            {"label": "30%",
+             "DownloadStatus": "ing"},
+            {"label": "80%",
+             "DownloadStatus": "ing"},
+            {"label": "98%",
+             "DownloadStatus": "ing"}]
+        self.set_container(C_LIST_DOWNLOAD_STATUS, items)
+        self.set_container(C_LIST_DOWNLOAD_DEL, items)
 
     def get_local_movie_list(self, strFilter):
         if strFilter == "":
