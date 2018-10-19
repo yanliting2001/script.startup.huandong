@@ -18,6 +18,7 @@ C_LEFTLIST_LOCAL_CATEGORIES = 200104
 C_LEFTLIST_CLOUD_CATEGORIES = 300102
 C_LIST_LOCAL_MOVIE = 200002
 C_LIST_CLOUD_MOVIE = 300001
+C_LIST_ACCOUNT_DOWNLOAD = 400001
 ADDON = xbmcaddon.Addon()
 ADDON_ID = ADDON.getAddonInfo('id')
 ADDON_PATH = ADDON.getAddonInfo('path').decode("utf-8")
@@ -42,6 +43,7 @@ class WindowHome(WindowXML, DialogBaseInfo):
             self.set_cloud_movie_categories()
             self.set_cloud_movie_list()
             self.isLaunched = True
+        self.set_download_list_progress()
 
     def onAction(self, action):
         if (action.getId() == 10 or action.getId() == 92):
@@ -127,6 +129,25 @@ class WindowHome(WindowXML, DialogBaseInfo):
                     "vid": video['vid']}
             items.append(item)
         self.set_container(C_LIST_CLOUD_MOVIE, items)
+
+    @run_async
+    def set_download_list_progress(self):
+        items = [
+            {"label": u"侏罗纪公园",
+             "ProgressPercent": "75"},
+            {"label": u"侏罗纪公园",
+             "ProgressPercent": "60"},
+            {"label": u"侏罗纪公园",
+             "ProgressPercent": "100"},
+            {"label": u"侏罗纪公园",
+             "ProgressPercent": "98"},
+            {"label": u"侏罗纪公园",
+             "ProgressPercent": "30"},
+            {"label": u"侏罗纪公园",
+             "ProgressPercent": "80"},
+            {"label": u"侏罗纪公园",
+             "ProgressPercent": "98"}]
+        self.set_container(C_LIST_ACCOUNT_DOWNLOAD, items)
 
     def get_local_movie_list(self, strFilter):
         if strFilter == "":
