@@ -16,11 +16,14 @@ ch = OnClickHandler()
 C_LIST_NAVIGATION = 9000
 C_LEFTLIST_LOCAL_CATEGORIES = 200104
 C_LEFTLIST_CLOUD_CATEGORIES = 300102
+C_LEFTLIST_DOWNLOAD_APP = 400101
+C_LEFTLIST_PAY_ABOUT = 400102
 C_LIST_LOCAL_MOVIE = 200002
 C_LIST_CLOUD_MOVIE = 300001
 C_LIST_ACCOUNT_DOWNLOAD = 400001
 C_LIST_DOWNLOAD_STATUS = 400002
 C_LIST_DOWNLOAD_DEL = 400003
+C_LABEL_ACCOUNT_CONTENT = 6000
 ADDON = xbmcaddon.Addon()
 ADDON_ID = ADDON.getAddonInfo('id')
 ADDON_PATH = ADDON.getAddonInfo('path').decode("utf-8")
@@ -44,6 +47,7 @@ class WindowHome(WindowXML, DialogBaseInfo):
             self.set_local_movie_list()
             self.set_cloud_movie_categories()
             self.set_cloud_movie_list()
+            self.set_account_categories()
             self.isLaunched = True
         self.set_download_list_progress()
         self.set_download_manager_list()
@@ -129,6 +133,28 @@ class WindowHome(WindowXML, DialogBaseInfo):
             else:
                 xbmc.executebuiltin('Control.Move({0},1)'.format(C_LIST_DOWNLOAD_DEL))
 
+    @ch.action("up", str(C_LEFTLIST_DOWNLOAD_APP))
+    @ch.action("down", str(C_LEFTLIST_DOWNLOAD_APP))
+    def download_app_up_down(self):
+        pos = self.listitem.getProperty("CurrentItem")
+        if pos == "1":
+            self.window.setProperty("AccountContent", "download")
+            self.getControl(C_LABEL_ACCOUNT_CONTENT).setLabel(u"下载管理")
+        elif pos == "2":
+            self.window.setProperty("AccountContent", "app")
+            self.getControl(C_LABEL_ACCOUNT_CONTENT).setLabel(u"手机端APP")
+
+    @ch.action("up", str(C_LEFTLIST_PAY_ABOUT))
+    @ch.action("down", str(C_LEFTLIST_PAY_ABOUT))
+    def pay_about_up_down(self):
+        pos = self.listitem.getProperty("CurrentItem")
+        if pos == "1":
+            self.window.setProperty("AccountContent", "pay")
+            self.getControl(C_LABEL_ACCOUNT_CONTENT).setLabel(u"续费缴费")
+        elif pos == "2":
+            self.window.setProperty("AccountContent", "about")
+            self.getControl(C_LABEL_ACCOUNT_CONTENT).setLabel(u"关于我们")
+
     @ch.click(C_LIST_DOWNLOAD_STATUS)
     def switch_download_status(self):
         status = self.listitem.getProperty("DownloadStatus")
@@ -199,6 +225,19 @@ class WindowHome(WindowXML, DialogBaseInfo):
             items.append(item)
         self.set_container(C_LIST_CLOUD_MOVIE, items)
 
+    def set_account_categories(self):
+        items = [
+            {"label": u"下载管理",
+             "CurrentItem": "1"},
+            {"label": u"手机端APP",
+             "CurrentItem": "2"},
+            {"label": u"续费缴费",
+             "CurrentItem": "1"},
+            {"label": u"关于我们",
+             "CurrentItem": "2"}]
+        self.set_container(C_LEFTLIST_DOWNLOAD_APP, items[:2])
+        self.set_container(C_LEFTLIST_PAY_ABOUT, items[2:])
+
     @run_async
     def set_download_list_progress(self):
         items = [
@@ -217,6 +256,7 @@ class WindowHome(WindowXML, DialogBaseInfo):
             {"label": u"侏罗纪公园",
              "ProgressPercent": "98"}]
         self.set_container(C_LIST_ACCOUNT_DOWNLOAD, items)
+        self.window.setProperty("AccountContent", "download")
 
     @run_async
     def set_download_manager_list(self):
