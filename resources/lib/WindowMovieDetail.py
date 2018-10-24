@@ -16,6 +16,7 @@ ADDON_PATH = ADDON.getAddonInfo('path').decode("utf-8")
 ADDON_DATA_PATH = xbmc.translatePath("special://profile/addon_data/%s" % ADDON_ID).decode("utf-8")
 C_LIST_ACTORS = 3001
 C_LIST_RECOMMEMD = 6000
+C_BUTTON_PLAY = 201
 
 
 class WindowMovieDetail(WindowXML, DialogBaseInfo):
@@ -37,6 +38,13 @@ class WindowMovieDetail(WindowXML, DialogBaseInfo):
     def onClick(self, control_id):
         super(WindowMovieDetail, self).onClick(control_id)
         ch.serve(control_id, self)
+
+    @ch.click(C_BUTTON_PLAY)
+    def play_video(self):
+        if not xbmc.getCondVisibility('system.platform.Android'):
+            listitem = xbmcgui.ListItem(u"2016里约奥运会男子4x100米颁奖仪式")
+            xbmc.Player().play("C:/Download/20160810-111059351.mkv", listitem)
+            xbmc.executebuiltin("ActivateWindow(fullscreenvideo)")
 
     def parse_movie_info(self, name):
         data = self.get_movie_detail_json(name)
