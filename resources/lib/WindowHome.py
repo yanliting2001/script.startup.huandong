@@ -7,6 +7,7 @@ from OnClickHandler import OnClickHandler
 from dialogs.DialogBaseInfo import DialogBaseInfo
 from BaseClasses import *
 from common import *
+from WindowManager import wm
 try:
     import simplejson
 except Exception:
@@ -154,6 +155,12 @@ class WindowHome(WindowXML, DialogBaseInfo):
         elif pos == "2":
             self.window.setProperty("AccountContent", "about")
             self.getControl(C_LABEL_ACCOUNT_CONTENT).setLabel(u"关于我们")
+
+    @ch.click(C_LIST_LOCAL_MOVIE)
+    def open_movie_info_window(self):
+        title = self.listitem.getProperty("label")
+        vid = self.listitem.getProperty("vid")
+        wm.open_movie_detail(prev_window=None, title=title, video_id=vid)
 
     @ch.click(C_LIST_DOWNLOAD_STATUS)
     def switch_download_status(self):

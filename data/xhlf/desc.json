@@ -1,0 +1,276 @@
+{
+    "v": {
+        "cataId": "124",
+        "bookList": "",
+        "guests": "",
+        "cataIds": "124,101,211280",
+        "freeDuration": "0",
+        "type": "1",
+        "imghurl": "",
+        "vip": "0",
+        "page": "1",
+        "listPrice": "0.0",
+        "traceName": "黑色幽默系列",
+        "request": {
+            "_attributes": {
+                "virtual": "0",
+                "platform": "launcher",
+                "ts": "1540265003566",
+                "sip": "10.60.10.244",
+                "pre": "tvbox",
+                "uh": "101.81.11.150",
+                "userLevel": "0",
+                "ac": "2",
+                "ver": "3",
+                "mobile": "0"
+            }
+        },
+        "year": "2014",
+        "vid": "18507415",
+        "imgurl": "http://img24.pplive.cn/sp423/2014/12/03/13234371841.jpg",
+        "fanart": "/data/xhlf/images/poster.jpg",
+        "freeSubIds": "",
+        "fixupdate": "",
+        "status": {
+            "_attributes": {
+                "bpp": "1",
+                "epg": "1"
+            }
+        },
+        "catalog": "喜剧,爱情,院线",
+        "vsTitle": "",
+        "mark": "8.3",
+        "director": "宁浩",
+        "sloturl": "http://v.img.pplive.cn/cp120/fe/85/fe8522c5805be268471309aa4a02caac/3.jpg",
+        "content": "耿浩老婆移情别恋，跟耿浩闹离婚，耿浩陷入极度痛苦之中。耿浩揣着斧子去砍第三者，幸亏哥们潘肖将他拉住。潘肖告诉耿浩，摆脱痛苦最简单的方法，就是开始一段新感情。就这样，兄弟俩一块踏上了猎艳之旅。",
+        "flag": "b",
+        "programNO": "",
+        "bppCataId": "3",
+        "hot": "69",
+        "onlinetime": "2018-10-12 11:29:33",
+        "covertranspic": "",
+        "virtual": "0",
+        "denyDownload": "0",
+        "topBppCataId": "1",
+        "freeEpNum": "0",
+        "vt": "3",
+        "state": "1",
+        "video_list_count": "1",
+        "douBanScore": "7.0",
+        "vsEpId": "",
+        "bppCataTitle": "喜剧",
+        "resolution": "1920|1080",
+        "video_list_page_count": "1",
+        "title": "心花路放",
+        "episodeFirstTime": "",
+        "area": "内地",
+        "traceId": "954114",
+        "pay": "0",
+        "contype": "0",
+        "actors": [
+            {
+                "id": "13833",
+                "name": "徐峥"
+            },
+            {
+                "id": "13032",
+                "name": "黄渤"
+            },
+            {
+                "id": "17024",
+                "name": "袁泉"
+            }
+        ],
+        "note": "",
+        "promotePrice": "0.0",
+        "ftAll": "63",
+        "videoListResult": "0",
+        "infoId": "287888",
+        "countInPage": "0",
+        "moreTitle": "玩命邂逅|玩儿命邂逅",
+        "vsValue": "0",
+        "typeName": "电影",
+        "sectionId": "0",
+        "duration": "118",
+        "episodeLastTime": "",
+        "durationSecond": "7071",
+        "buyTime": "0",
+        "itemList": [
+            {
+                "_value": "4,3",
+                "_attributes": {
+                    "id": "201",
+                    "intValue": "0"
+                }
+            },
+            {
+                "_value": "0",
+                "_attributes": {
+                    "id": "204",
+                    "intValue": "0"
+                }
+            },
+            {
+                "_value": "0,0",
+                "_attributes": {
+                    "id": "205",
+                    "intValue": "0"
+                }
+            },
+            {
+                "_attributes": {
+                    "id": "228",
+                    "intValue": "10"
+                }
+            }
+        ],
+        "vipPrice": "0.0",
+        "total_state": "0",
+        "subtitle": "",
+        "bitrate": "6040",
+        "video_list": {
+            "_attributes": {
+                "maxChars": "4",
+                "maxBytes": "12",
+                "isNumber": "0"
+            },
+            "playlink2": {
+                "_attributes": {
+                    "createTime": "2014-12-03 05:24:05",
+                    "publishTime": "2014-12-03 13:24:05",
+                    "end_point": "0",
+                    "start_point": "0",
+                    "denyDownload": "0",
+                    "vt": "3",
+                    "contentType": "0",
+                    "date": "",
+                    "sloturl": "http://v.img.pplive.cn/cp120/fe/85/fe8522c5805be268471309aa4a02caac/3.jpg",
+                    "id": "18507415",
+                    "imghurl": "",
+                    "vip": "0",
+                    "duration": "118",
+                    "title": "心花路放",
+                    "durationSecond": "7071",
+                    "olt": "0",
+                    "subtitle": "",
+                    "pay": "0",
+                    "pv": "148814965",
+                    "covertranspic": "",
+                    "ftall": "63",
+                    "imgurl": ""
+                },
+                "source": {
+                    "_value": "1d7c1WCcaMih2c7j4a5maZqlpM%2bgxmhom5Sqn6HQyJdpmZSnn82gnWJrm8nVnZfc1WY%3d",
+                    "_attributes": {
+                        "filelength": "0",
+                        "bitrate": "6040",
+                        "mark": "b",
+                        "resolution": "1920|1080"
+                    }
+                }
+            }
+        },
+        "pv": "148814965",
+        "topBppCataTitle": "电影",
+        "directors": [
+            {
+                "id": "45977",
+                "name": "宁浩"
+            }
+        ],
+        "act": "徐峥,黄渤,袁泉"
+    },
+    "recommend": [
+        {
+            "id": 16329900,
+            "title": "101次求婚",
+            "extraData": {
+                "score": "8.2",
+                "vipPrice": "0.00",
+                "isVip": 0,
+                "douBanScore": "5.6",
+                "isPay": 0,
+                "coverPic": "2013/02/19/09472673516.jpg",
+                "vt": 3
+            }
+        },
+        {
+            "id": 16159794,
+            "title": "人再囧途之泰囧",
+            "extraData": {
+                "score": "8.0",
+                "vipPrice": "0.00",
+                "isVip": 0,
+                "douBanScore": "7.4",
+                "isPay": 0,
+                "coverPic": "2012/12/18/13571840115.jpg",
+                "vt": 3
+            }
+        },
+        {
+            "id": 11724051,
+            "title": "人在囧途",
+            "extraData": {
+                "score": "9.5",
+                "vipPrice": "0.00",
+                "isVip": 0,
+                "douBanScore": "7.5",
+                "isPay": 0,
+                "coverPic": "2014/01/20/19210744284.jpg",
+                "vt": 3
+            }
+        },
+        {
+            "id": 24451549,
+            "title": "唐人街探案",
+            "extraData": {
+                "score": "8.9",
+                "vipPrice": "0.00",
+                "isVip": 0,
+                "douBanScore": "7.5",
+                "isPay": 0,
+                "coverPic": "2016/04/14/10153039516.jpg",
+                "vt": 3
+            }
+        },
+        {
+            "id": 24274827,
+            "title": "夏洛特烦恼",
+            "extraData": {
+                "score": "8.9",
+                "vipPrice": "0.00",
+                "isVip": 0,
+                "douBanScore": "7.4",
+                "isPay": 0,
+                "coverPic": "2015/12/02/09591172544.jpg",
+                "vt": 3
+            }
+        },
+        {
+            "id": 27258247,
+            "title": "羞羞的铁拳",
+            "extraData": {
+                "score": "8.6",
+                "vipPrice": "0.00",
+                "isVip": 0,
+                "douBanScore": "0.0",
+                "isPay": 0,
+                "coverPic": "2017/12/20/19003311326.jpg",
+                "vt": 3
+            }
+        },
+        {
+            "id": 24321655,
+            "title": "前任2：备胎反击战",
+            "extraData": {
+                "score": "8.4",
+                "vipPrice": "0.00",
+                "isVip": 0,
+                "douBanScore": "5.0",
+                "isPay": 0,
+                "coverPic": "2015/10/22/16050587815.jpg",
+                "vt": 3
+            }
+        }
+    ]
+}

@@ -9,6 +9,7 @@ ADDON_ICON = ADDON.getAddonInfo('icon')
 ADDON_NAME = ADDON.getAddonInfo('name')
 ADDON_PATH = ADDON.getAddonInfo('path').decode("utf-8")
 HOME_XML = "script-Home.xml"
+MOVIE_DETAIL_XML = "script-DialogVideoDetail.xml"
 
 
 class WindowManager(object):
@@ -37,6 +38,14 @@ class WindowManager(object):
         """
         from WindowHome import WindowHome
         dialog = WindowHome(HOME_XML, ADDON_PATH)
+        self.open_dialog(dialog, prev_window)
+
+    def open_movie_detail(self, prev_window=None, title=None, video_id=None):
+        """
+        open movie detail, deal with window stack
+        """
+        from WindowMovieDetail import WindowMovieDetail
+        dialog = WindowMovieDetail(MOVIE_DETAIL_XML, ADDON_PATH, title=title, video_id=video_id)
         self.open_dialog(dialog, prev_window)
 
     def open_dialog(self, dialog, prev_window):
