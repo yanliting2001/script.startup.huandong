@@ -11,6 +11,7 @@ ADDON_PATH = ADDON.getAddonInfo('path').decode("utf-8")
 HOME_XML = "script-Home.xml"
 MOVIE_DETAIL_XML = "script-DialogVideoDetail.xml"
 FOLLOW_XML = "script-DialogFollow.xml"
+HISTORY_XML = "script-DialogHistory.xml"
 
 
 class WindowManager(object):
@@ -55,6 +56,14 @@ class WindowManager(object):
         """
         from WindowFollow import WindowFollow
         dialog = WindowFollow(FOLLOW_XML, ADDON_PATH)
+        self.open_dialog(dialog, prev_window)
+
+    def open_history(self, prev_window=None):
+        """
+        open history, deal with window stack
+        """
+        from WindowHistory import WindowHistory
+        dialog = WindowHistory(HISTORY_XML, ADDON_PATH)
         self.open_dialog(dialog, prev_window)
 
     def open_dialog(self, dialog, prev_window):

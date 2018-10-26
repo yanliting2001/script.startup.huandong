@@ -31,5 +31,7 @@ if sys.argv[1] == "home":
     wm.open_home()
 elif sys.argv[1] == "follow":
     wm.open_follow()
+elif sys.argv[1] == "history":
+    wm.open_history()
 
 log('script version %s stopped' % ADDON_VERSION)
