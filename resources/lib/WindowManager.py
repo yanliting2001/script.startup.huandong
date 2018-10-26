@@ -10,6 +10,7 @@ ADDON_NAME = ADDON.getAddonInfo('name')
 ADDON_PATH = ADDON.getAddonInfo('path').decode("utf-8")
 HOME_XML = "script-Home.xml"
 MOVIE_DETAIL_XML = "script-DialogVideoDetail.xml"
+FOLLOW_XML = "script-DialogFollow.xml"
 
 
 class WindowManager(object):
@@ -46,6 +47,14 @@ class WindowManager(object):
         """
         from WindowMovieDetail import WindowMovieDetail
         dialog = WindowMovieDetail(MOVIE_DETAIL_XML, ADDON_PATH, title=title, video_id=video_id)
+        self.open_dialog(dialog, prev_window)
+
+    def open_follow(self, prev_window=None):
+        """
+        open follow, deal with window stack
+        """
+        from WindowFollow import WindowFollow
+        dialog = WindowFollow(FOLLOW_XML, ADDON_PATH)
         self.open_dialog(dialog, prev_window)
 
     def open_dialog(self, dialog, prev_window):
