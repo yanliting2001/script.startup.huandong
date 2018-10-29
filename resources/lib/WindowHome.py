@@ -29,6 +29,7 @@ ADDON = xbmcaddon.Addon()
 ADDON_ID = ADDON.getAddonInfo('id')
 ADDON_PATH = ADDON.getAddonInfo('path').decode("utf-8")
 ADDON_DATA_PATH = xbmc.translatePath("special://profile/addon_data/%s" % ADDON_ID).decode("utf-8")
+MOVIE_DATA_PATH = "D:/"
 
 
 class WindowHome(WindowXML, DialogBaseInfo):
@@ -36,7 +37,7 @@ class WindowHome(WindowXML, DialogBaseInfo):
     def __init__(self, *args, **kwargs):
         super(WindowHome, self).__init__(*args, **kwargs)
         self.isLaunched = False
-        self.local_filter = ""
+        self.local_filter = "new"
         self.cloud_filter = ""
         self.local_filter_pos = 0
         self.cloud_filter_pos = 0
@@ -157,10 +158,18 @@ class WindowHome(WindowXML, DialogBaseInfo):
             self.getControl(C_LABEL_ACCOUNT_CONTENT).setLabel(u"关于我们")
 
     @ch.click(C_LIST_LOCAL_MOVIE)
-    def open_movie_info_window(self):
+    def open_local_movie_info_window(self):
         title = self.listitem.getProperty("label")
+        resource_type = self.listitem.getProperty("type")
+        path = self.listitem.getProperty("path")
+        wm.open_movie_detail(prev_window=None, title=title, video_id=None, resource_type=resource_type, path=path)
+
+    @ch.click(C_LIST_CLOUD_MOVIE)
+    def open_cloud_movie_info_window(self):
+        title = self.listitem.getProperty("label")
+        resource_type = self.listitem.getProperty("type")
         vid = self.listitem.getProperty("vid")
-        wm.open_movie_detail(prev_window=None, title=title, video_id=vid)
+        wm.open_movie_detail(prev_window=None, title=title, video_id=vid, resource_type=resource_type, path=None)
 
     @ch.click(C_LIST_DOWNLOAD_STATUS)
     def switch_download_status(self):
@@ -183,7 +192,7 @@ class WindowHome(WindowXML, DialogBaseInfo):
         self.control.selectItem(pos)
 
     def local_filter_up_down(self, item):
-        self.local_filter = item.getProperty("value")
+        self.local_filter = item.getProperty("key")
         self.set_local_movie_list(self.local_filter)
 
     def cloud_filter_up_down(self, item):
@@ -192,22 +201,23 @@ class WindowHome(WindowXML, DialogBaseInfo):
 
     def set_local_movie_categories(self):
         data = self.get_local_movie_categories()
-        itemValues = data['items'][0]['itemValues']
+        category_list = data['localCategories']
         items = []
-        for value in itemValues:
-            item = {"label": value['key'],
-                    "value": value['val']}
+        for category in category_list:
+            item = {"label": category['name'],
+                    "key": category['key']}
             items.append(item)
         self.set_container(C_LEFTLIST_LOCAL_CATEGORIES, items, True)
 
-    def set_local_movie_list(self, filter=""):
-        data = self.get_local_movie_list(self.local_filter)
-        videos = data['videos']
+    def set_local_movie_list(self, strFilter="new"):
+        data = self.get_local_movie_list(strFilter)
         items = []
+        videos = data['localList']
         for video in videos:
-            item = {"label": video['title'],
-                    "icon": video['imgurl'],
-                    "vid": video['vid']}
+            item = {"label": video['name'],
+                    "icon": MOVIE_DATA_PATH + video['imgUrl'],
+                    "path": MOVIE_DATA_PATH + video['url'],
+                    "type": "local"}
             items.append(item)
         self.set_container(C_LIST_LOCAL_MOVIE, items)
 
@@ -228,7 +238,8 @@ class WindowHome(WindowXML, DialogBaseInfo):
         for video in videos:
             item = {"label": video['title'],
                     "icon": video['imgurl'],
-                    "vid": video['vid']}
+                    "vid": video['vid'],
+                    "type": "cloud"}
             items.append(item)
         self.set_container(C_LIST_CLOUD_MOVIE, items)
 
@@ -286,30 +297,24 @@ class WindowHome(WindowXML, DialogBaseInfo):
         self.set_container(C_LIST_DOWNLOAD_DEL, items)
 
     def get_local_movie_list(self, strFilter):
-        if strFilter == "":
-            return self.get_local_movie_list_all()
-        elif strFilter == "AREA=美国":
-            return self.get_local_movie_list_hollywood()
-        elif strFilter == "cataid=211280,157":
-            return self.get_local_movie_list_cinema()
-        elif strFilter == "AREA=大陆,香港,澳门,台湾":
-            return self.get_local_movie_list_chinese()
-        elif strFilter == "cataid=101,132,133,134":
-            return self.get_local_movie_list_love()
-        elif strFilter == "cataid=124":
-            return self.get_local_movie_list_comedy()
-        elif strFilter == "cataid=125,128":
-            return self.get_local_movie_list_crime()
-        elif strFilter == "cataid=102,103,129,131":
-            return self.get_local_movie_list_scream()
-        elif strFilter == "cataid=100,127":
+        if strFilter == "new":
+            return self.get_local_movie_list_new()
+        elif strFilter == "coming":
+            return self.get_local_movie_list_coming()
+        elif strFilter == "best":
+            return self.get_local_movie_list_best()
+        elif strFilter == "rank":
+            return self.get_local_movie_list_rank()
+        elif strFilter == "hotstar":
+            return self.get_local_movie_list_star()
+        elif strFilter == "action":
             return self.get_local_movie_list_action()
-        elif strFilter == "cataid=104,126":
-            return self.get_local_movie_list_fiction()
-        elif strFilter == "cataid=130":
-            return self.get_local_movie_list_animation()
-        elif strFilter == "cataid=75281,211334":
-            return self.get_local_movie_list_network()
+        elif strFilter == "city":
+            return self.get_local_movie_list_city()
+        elif strFilter == "scream":
+            return self.get_local_movie_list_scream()
+        elif strFilter == "detect":
+            return self.get_local_movie_list_detect()
 
     def get_cloud_movie_list(self, strFilter):
         if strFilter == "":
@@ -338,43 +343,34 @@ class WindowHome(WindowXML, DialogBaseInfo):
             return self.get_cloud_movie_list_network()
 
     def get_local_movie_categories(self):
-        return get_json_file(ADDON_PATH + "/data/movie_categories.json")
+        return get_json_file(MOVIE_DATA_PATH + "local_category.json")
 
-    def get_local_movie_list_all(self):
-        return get_json_file(ADDON_PATH + "/data/movie_list_all.json")
+    def get_local_movie_list_new(self):
+        return get_json_file(MOVIE_DATA_PATH + "locallist.json")
 
-    def get_local_movie_list_hollywood(self):
-        return get_json_file(ADDON_PATH + "/data/movie_list_hollywood.json")
+    def get_local_movie_list_coming(self):
+        return get_json_file(MOVIE_DATA_PATH + "locallist_coming.json")
 
-    def get_local_movie_list_cinema(self):
-        return get_json_file(ADDON_PATH + "/data/movie_list_cinema.json")
+    def get_local_movie_list_best(self):
+        return get_json_file(MOVIE_DATA_PATH + "locallist_best.json")
 
-    def get_local_movie_list_chinese(self):
-        return get_json_file(ADDON_PATH + "/data/movie_list_chinese.json")
+    def get_local_movie_list_rank(self):
+        return get_json_file(MOVIE_DATA_PATH + "locallist_rank.json")
 
-    def get_local_movie_list_love(self):
-        return get_json_file(ADDON_PATH + "/data/movie_list_love.json")
-
-    def get_local_movie_list_comedy(self):
-        return get_json_file(ADDON_PATH + "/data/movie_list_comedy.json")
-
-    def get_local_movie_list_crime(self):
-        return get_json_file(ADDON_PATH + "/data/movie_list_crime.json")
-
-    def get_local_movie_list_scream(self):
-        return get_json_file(ADDON_PATH + "/data/movie_list_scream.json")
+    def get_local_movie_list_star(self):
+        return get_json_file(MOVIE_DATA_PATH + "locallist_hotstar.json")
 
     def get_local_movie_list_action(self):
-        return get_json_file(ADDON_PATH + "/data/movie_list_action.json")
+        return get_json_file(MOVIE_DATA_PATH + "locallist_action.json")
 
-    def get_local_movie_list_animation(self):
-        return get_json_file(ADDON_PATH + "/data/movie_list_animation.json")
+    def get_local_movie_list_city(self):
+        return get_json_file(MOVIE_DATA_PATH + "locallist_city.json")
 
-    def get_local_movie_list_fiction(self):
-        return get_json_file(ADDON_PATH + "/data/movie_list_fiction.json")
+    def get_local_movie_list_scream(self):
+        return get_json_file(MOVIE_DATA_PATH + "locallist_scream.json")
 
-    def get_local_movie_list_network(self):
-        return get_json_file(ADDON_PATH + "/data/movie_list_network.json")
+    def get_local_movie_list_detect(self):
+        return get_json_file(MOVIE_DATA_PATH + "locallist_detect.json")
 
     def get_cloud_movie_categories(self):
         return get_json_file(ADDON_PATH + "/data/movie_categories.json")
