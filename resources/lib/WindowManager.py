@@ -42,12 +42,12 @@ class WindowManager(object):
         dialog = WindowHome(HOME_XML, ADDON_PATH)
         self.open_dialog(dialog, prev_window)
 
-    def open_movie_detail(self, prev_window=None, title=None, video_id=None, resource_type=None, path=None):
+    def open_movie_detail(self, prev_window=None, title=None, icon=None, video_id=None, resource_type=None, path=None):
         """
         open movie detail, deal with window stack
         """
         from WindowMovieDetail import WindowMovieDetail
-        dialog = WindowMovieDetail(MOVIE_DETAIL_XML, ADDON_PATH, title=title, video_id=video_id, resource_type=resource_type, path=path)
+        dialog = WindowMovieDetail(MOVIE_DETAIL_XML, ADDON_PATH, title=title, icon=icon, video_id=video_id, resource_type=resource_type, path=path)
         self.open_dialog(dialog, prev_window)
 
     def open_follow(self, prev_window=None):

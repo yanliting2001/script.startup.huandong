@@ -157,19 +157,16 @@ class WindowHome(WindowXML, DialogBaseInfo):
             self.window.setProperty("AccountContent", "about")
             self.getControl(C_LABEL_ACCOUNT_CONTENT).setLabel(u"关于我们")
 
-    @ch.click(C_LIST_LOCAL_MOVIE)
-    def open_local_movie_info_window(self):
+    @ch.click([C_LIST_LOCAL_MOVIE, C_LIST_CLOUD_MOVIE])
+    def open_movie_info_window(self):
         title = self.listitem.getProperty("label")
+        icon = self.listitem.getProperty("icon")
         resource_type = self.listitem.getProperty("type")
+        if resource_type == "local":
+            icon = icon.replace(MOVIE_DATA_PATH, "")
         path = self.listitem.getProperty("path")
-        wm.open_movie_detail(prev_window=None, title=title, video_id=None, resource_type=resource_type, path=path)
-
-    @ch.click(C_LIST_CLOUD_MOVIE)
-    def open_cloud_movie_info_window(self):
-        title = self.listitem.getProperty("label")
-        resource_type = self.listitem.getProperty("type")
         vid = self.listitem.getProperty("vid")
-        wm.open_movie_detail(prev_window=None, title=title, video_id=vid, resource_type=resource_type, path=None)
+        wm.open_movie_detail(prev_window=None, title=title, icon=icon, video_id=vid, resource_type=resource_type, path=path)
 
     @ch.click(C_LIST_DOWNLOAD_STATUS)
     def switch_download_status(self):
@@ -214,8 +211,10 @@ class WindowHome(WindowXML, DialogBaseInfo):
         items = []
         videos = data['localList']
         for video in videos:
+            video_path = video['url']
             item = {"label": video['name'],
                     "icon": MOVIE_DATA_PATH + video['imgUrl'],
+                    "vid": video_path.replace("/", ""),
                     "path": MOVIE_DATA_PATH + video['url'],
                     "type": "local"}
             items.append(item)
@@ -239,6 +238,7 @@ class WindowHome(WindowXML, DialogBaseInfo):
             item = {"label": video['title'],
                     "icon": video['imgurl'],
                     "vid": video['vid'],
+                    "path": "",
                     "type": "cloud"}
             items.append(item)
         self.set_container(C_LIST_CLOUD_MOVIE, items)
