@@ -9,6 +9,7 @@ from BaseClasses import *
 from common import *
 from pinyin import PinYinAPI
 from follow import fc
+import VideoPlayer
 
 ch = OnClickHandler()
 ADDON = xbmcaddon.Addon()
@@ -17,6 +18,7 @@ ADDON_PATH = ADDON.getAddonInfo('path').decode("utf-8")
 ADDON_DATA_PATH = xbmc.translatePath("special://profile/addon_data/%s" % ADDON_ID).decode("utf-8")
 MOVIE_DATA_PATH = "D:/"
 HOME = xbmcgui.Window(10000)
+PLAYER = VideoPlayer.VideoPlayer()
 C_LIST_ACTORS = 3001
 C_LIST_RECOMMEMD = 6000
 C_BUTTON_PLAY = 201
@@ -56,9 +58,7 @@ class WindowMovieDetail(WindowXML, DialogBaseInfo):
     @ch.click(C_BUTTON_PLAY)
     def video_action(self):
         if self.type == "local":
-            listitem = xbmcgui.ListItem(self.title)
-            xbmc.Player().play(self.file_path, listitem)
-            xbmc.executebuiltin("ActivateWindow(fullscreenvideo)")
+            PLAYER.play(self.file_path, self.vid, self.detaildata)
         elif self.type == "cloud":
             pass
 

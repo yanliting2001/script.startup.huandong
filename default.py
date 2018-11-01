@@ -17,6 +17,7 @@ ADDON_VERSION = ADDON.getAddonInfo('version')
 ADDON_DATA_PATH = xbmc.translatePath("special://profile/addon_data/%s" % ADDON_ID).decode("utf-8")
 sys.path.append(xbmc.translatePath(os.path.join(ADDON_PATH, 'resources', 'lib')))
 from WindowManager import wm
+from VideoPlayer import stop_play
 
 
 class Main:
@@ -33,5 +34,7 @@ elif sys.argv[1] == "follow":
     wm.open_follow()
 elif sys.argv[1] == "history":
     wm.open_history()
+elif sys.argv[1] == "playerstop":
+    stop_play()
 
 log('script version %s stopped' % ADDON_VERSION)

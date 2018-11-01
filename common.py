@@ -131,3 +131,12 @@ def get_json_file(filename):
     with open(filename, 'r') as f:
         data = simplejson.load(f)
         return data
+
+
+def time_format_number(strTime):
+    if len(strTime) == 8:
+        return str(int(strTime[:-6]) * 3600 + int(strTime[3:-3]) * 60 + int(strTime[6:]))
+    elif len(strTime) == 5:
+        return str(int(strTime[:-3]) * 60 + int(strTime[3:]))
+    elif len(strTime) == 2:
+        return strTime
