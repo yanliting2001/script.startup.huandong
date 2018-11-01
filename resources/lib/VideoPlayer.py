@@ -55,7 +55,8 @@ class VideoPlayer(xbmc.Player):
         title = xbmc.getInfoLabel("VideoPlayer.Title")
         strTime = time_format_number(xbmc.getInfoLabel("VideoPlayer.Time"))
         vid = cid
-        hc.add_history([{"cid": cid, "vid": vid, "strTime": strTime, "title": title, "imgUrl": data["imgUrl"], "path": data["path"], "type": data["type"]}])
+        hc.add_history([{"cid": cid, "vid": vid, "strTime": strTime, "title": title.decode("utf8"), "imgUrl": data["imgUrl"], "path": data["path"], "type": data["type"]}])
+        xbmcgui.Window(10000).setProperty("HistoryUpdate", "1")
         xbmc.Player.stop(self)
 
     def continue_play_time(self, datatime):
