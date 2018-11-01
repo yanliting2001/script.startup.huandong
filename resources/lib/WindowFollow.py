@@ -14,6 +14,7 @@ ADDON = xbmcaddon.Addon()
 ADDON_ID = ADDON.getAddonInfo('id')
 ADDON_PATH = ADDON.getAddonInfo('path').decode("utf-8")
 ADDON_DATA_PATH = xbmc.translatePath("special://profile/addon_data/%s" % ADDON_ID).decode("utf-8")
+MOVIE_DATA_PATH = "D:/"
 HOME = xbmcgui.Window(10000)
 C_LIST_FOLLOW = 5000
 C_BUTTON_DEL = 200
@@ -48,6 +49,9 @@ class WindowFollow(WindowXML, DialogBaseInfo):
         icon = self.listitem.getProperty("icon")
         resource_type = self.listitem.getProperty("type")
         path = self.listitem.getProperty("path")
+        if resource_type == "local":
+            icon = icon.replace(MOVIE_DATA_PATH, "")
+            path = path.replace(MOVIE_DATA_PATH, "")
         vid = self.listitem.getProperty("vid")
         HOME.setProperty("FollowToVideoDetail", "1")
         wm.open_movie_detail(prev_window=None, title=title, icon=icon, video_id=vid, resource_type=resource_type, path=path)
@@ -66,9 +70,9 @@ class WindowFollow(WindowXML, DialogBaseInfo):
         items = []
         for item in follow_list:
             liz = {"label": item["title"],
-                   "icon": item["imgUrl"],
+                   "icon": MOVIE_DATA_PATH + item["imgUrl"],
                    "vid": item["cid"],
-                   "path": item["path"],
+                   "path": MOVIE_DATA_PATH + item["path"],
                    "type": item["type"]}
             items.append(liz)
         self.set_container(C_LIST_FOLLOW, items, True)

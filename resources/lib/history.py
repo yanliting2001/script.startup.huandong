@@ -97,8 +97,8 @@ class HistoryClass(object):
         data = None
         for element in cidlist:
             try:
-                cid = result[element]["cid"]
                 vid = result[element]["vid"]
+                cid = vid
                 strTime = result[element]["strTime"]
                 title = result[element]["title"]
                 imgUrl = result[element]["imgUrl"]
@@ -107,11 +107,7 @@ class HistoryClass(object):
                 viewInfo.append({"cid": cid, "vid": vid, "strTime": strTime, "title": title, "imgUrl": imgUrl, "path": path, "type": c_type})
             except Exception:
                 print_exc()
-        data = simplejson.dumps({
-            "errcode": 0,
-            "errmsg": "",
-            "ret": 0,
-            "viewInfo": viewInfo})
+        data = {"errcode": 0, "errmsg": "", "ret": 0, "viewInfo": viewInfo}
         return data
 
     def _get_one(self, cid):

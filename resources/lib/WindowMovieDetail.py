@@ -33,7 +33,7 @@ class WindowMovieDetail(WindowXML, DialogBaseInfo):
         self.imgUrl = kwargs.get("icon")
         self.vid = kwargs.get("video_id")
         self.type = kwargs.get("resource_type")
-        self.path = kwargs.get("path")
+        self.path = MOVIE_DATA_PATH + kwargs.get("path")
         self.file_path = ""
         self.detaildata = {}
 
@@ -168,8 +168,8 @@ class WindowMovieDetail(WindowXML, DialogBaseInfo):
         result = {}
         result["title"] = json_query["title"]
         if video_type == "local":
-            result["imgUrl"] = MOVIE_DATA_PATH + self.imgUrl
-            result["path"] = MOVIE_DATA_PATH + self.vid + "/"
+            result["imgUrl"] = self.imgUrl
+            result["path"] = self.vid + "/"
         else:
             result["imgUrl"] = json_query["imgurl"]
             result["path"] = ""
