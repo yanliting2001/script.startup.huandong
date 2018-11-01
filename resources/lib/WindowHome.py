@@ -74,6 +74,8 @@ class WindowHome(WindowXML, DialogBaseInfo):
     @ch.action("down", str(C_LEFTLIST_LOCAL_CATEGORIES))
     def refresh_local_movie_list(self):
         xbmc.sleep(500)
+        if self.getFocusId() != C_LEFTLIST_LOCAL_CATEGORIES:
+            return
         filter_container = self.getControl(C_LEFTLIST_LOCAL_CATEGORIES)
         pos = filter_container.getSelectedPosition()
         if self.local_filter_pos != pos:
