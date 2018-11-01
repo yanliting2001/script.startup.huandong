@@ -29,7 +29,7 @@ ADDON = xbmcaddon.Addon()
 ADDON_ID = ADDON.getAddonInfo('id')
 ADDON_PATH = ADDON.getAddonInfo('path').decode("utf-8")
 ADDON_DATA_PATH = xbmc.translatePath("special://profile/addon_data/%s" % ADDON_ID).decode("utf-8")
-MOVIE_DATA_PATH = "D:/"
+MOVIE_DATA_PATH = "/storage/udisk0/part1/"
 
 
 class WindowHome(WindowXML, DialogBaseInfo):
