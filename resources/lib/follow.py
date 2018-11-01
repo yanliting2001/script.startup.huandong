@@ -143,9 +143,9 @@ class FollowClass(object):
     def _verify(self, vidlist):
         cache = StorageServer2.TimedStorage("follow")
         data = {}
+        cid = vidlist[0]["cid"]
         try:
             cidlist = cache["list"]
-            cid = vidlist[0]["cid"]
             if cid in cidlist:
                 data["vidlist"] = [{"cid": cid, "isfollow": 1}]
             else:
