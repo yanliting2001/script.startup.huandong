@@ -36,5 +36,7 @@ elif sys.argv[1] == "history":
     wm.open_history()
 elif sys.argv[1] == "playerstop":
     stop_play()
+elif sys.argv[1] == "search":
+    wm.open_search()
 
 log('script version %s stopped' % ADDON_VERSION)
