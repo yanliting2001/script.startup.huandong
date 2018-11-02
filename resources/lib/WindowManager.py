@@ -12,6 +12,7 @@ HOME_XML = "script-Home.xml"
 MOVIE_DETAIL_XML = "script-DialogVideoDetail.xml"
 FOLLOW_XML = "script-DialogFollow.xml"
 HISTORY_XML = "script-DialogHistory.xml"
+SEARCH_XML = "script-DialogSearch.xml"
 
 
 class WindowManager(object):
@@ -64,6 +65,14 @@ class WindowManager(object):
         """
         from WindowHistory import WindowHistory
         dialog = WindowHistory(HISTORY_XML, ADDON_PATH)
+        self.open_dialog(dialog, prev_window)
+
+    def open_search(self, prev_window=None):
+        """
+        open search, deal with window stack
+        """
+        from WindowSearch import WindowSearch
+        dialog = WindowSearch(SEARCH_XML, ADDON_PATH)
         self.open_dialog(dialog, prev_window)
 
     def open_dialog(self, dialog, prev_window):
