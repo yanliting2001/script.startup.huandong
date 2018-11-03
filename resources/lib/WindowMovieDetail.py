@@ -23,6 +23,7 @@ C_LIST_ACTORS = 3001
 C_LIST_RECOMMEMD = 6000
 C_BUTTON_PLAY = 201
 C_BUTTON_FOLLOW = 202
+C_BUTTON_DEL = 203
 
 
 class WindowMovieDetail(WindowXML, DialogBaseInfo):
@@ -43,6 +44,7 @@ class WindowMovieDetail(WindowXML, DialogBaseInfo):
             self.parse_local_movie_info(self.path)
         elif self.type == "cloud":
             self.getControl(C_BUTTON_PLAY).setLabel(u"下  载")
+            self.getControl(C_BUTTON_DEL).setVisible(False)
             name_pinyin = PinYinAPI.getPinYinFirstLetter(self.title.decode('utf-8'))
             self.parse_cloud_movie_info(name_pinyin)
 
@@ -57,6 +59,7 @@ class WindowMovieDetail(WindowXML, DialogBaseInfo):
     @check_multiclick
     @ch.click(C_BUTTON_PLAY)
     def video_action(self):
+        button_label = self.getControl(C_BUTTON_PLAY).getLabel()
         if self.type == "local":
             PLAYER.play(self.file_path, self.vid, self.detaildata)
         elif self.type == "cloud":
