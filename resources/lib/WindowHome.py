@@ -39,7 +39,7 @@ class WindowHome(WindowXML, DialogBaseInfo):
         super(WindowHome, self).__init__(*args, **kwargs)
         self.isLaunched = False
         self.local_filter = "new"
-        self.cloud_filter = ""
+        self.cloud_filter = "new"
         self.local_filter_pos = 0
         self.cloud_filter_pos = 0
 
@@ -89,6 +89,8 @@ class WindowHome(WindowXML, DialogBaseInfo):
     @ch.action("down", str(C_LEFTLIST_CLOUD_CATEGORIES))
     def refresh_cloud_movie_list(self):
         xbmc.sleep(500)
+        if self.getFocusId() != C_LEFTLIST_CLOUD_CATEGORIES:
+            return
         filter_container = self.getControl(C_LEFTLIST_CLOUD_CATEGORIES)
         pos = filter_container.getSelectedPosition()
         if self.cloud_filter_pos != pos:
@@ -197,7 +199,7 @@ class WindowHome(WindowXML, DialogBaseInfo):
         self.set_local_movie_list(self.local_filter)
 
     def cloud_filter_up_down(self, item):
-        self.cloud_filter = item.getProperty("value")
+        self.cloud_filter = item.getProperty("key")
         self.set_cloud_movie_list(self.cloud_filter)
 
     def set_local_movie_categories(self):
@@ -225,24 +227,25 @@ class WindowHome(WindowXML, DialogBaseInfo):
         self.set_container(C_LIST_LOCAL_MOVIE, items)
 
     def set_cloud_movie_categories(self):
-        data = self.get_cloud_movie_categories()
-        itemValues = data['items'][0]['itemValues']
+        data = self.get_local_movie_categories()
+        category_list = data["localCategories"]
         items = []
-        for value in itemValues:
-            item = {"label": value['key'],
-                    "value": value['val']}
+        for category in category_list:
+            item = {"label": category['name'],
+                    "key": category['key']}
             items.append(item)
         self.set_container(C_LEFTLIST_CLOUD_CATEGORIES, items)
 
-    def set_cloud_movie_list(self, filter=""):
-        data = self.get_cloud_movie_list(self.cloud_filter)
-        videos = data['videos']
+    def set_cloud_movie_list(self, strFilter="new"):
+        data = self.get_local_movie_list(strFilter)
         items = []
+        videos = data["localList"]
         for video in videos:
-            item = {"label": video['title'],
-                    "icon": video['imgurl'],
-                    "vid": video['vid'],
-                    "path": "",
+            video_path = video['url']
+            item = {"label": video['name'],
+                    "icon": MOVIE_DATA_PATH + video['imgUrl'],
+                    "vid": video_path.replace("/", ""),
+                    "path": MOVIE_DATA_PATH + video['url'],
                     "type": "cloud"}
             items.append(item)
         self.set_container(C_LIST_CLOUD_MOVIE, items)
