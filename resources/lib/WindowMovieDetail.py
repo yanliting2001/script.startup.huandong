@@ -163,6 +163,7 @@ class WindowMovieDetail(WindowXML, DialogBaseInfo):
             if percent != "100":
                 self.window.setProperty("IsDownloading", "1")
                 self.window.setProperty("DownloadPercentInt", percent)
+                self.getControl(C_PROGRESS_DOWNLOAD).setPercent(float(int(percent)))
                 self.download_progress()
 
     @run_async
@@ -170,13 +171,14 @@ class WindowMovieDetail(WindowXML, DialogBaseInfo):
         count = int(self.window.getProperty("DownloadPercentInt"))
         control_progress = self.getControl(C_PROGRESS_DOWNLOAD)
         while True:
-            xbmc.sleep(100)
+            xbmc.sleep(5000)
             count += 2
             if count > 100:
                 count = 100
                 break
             control_progress.setPercent(float(count))
             self.window.setProperty("DownloadPercentInt", str(count))
+            dc.add_download([{"cid": self.vid, "vid": self.vid, "percent": str(count), "title": self.title}])
         self.window.clearProperty("IsDownloading")
         self.getControl(C_BUTTON_PLAY).setLabel(u"播  放")
         self.getControl(C_BUTTON_DEL).setVisible(True)

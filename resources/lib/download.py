@@ -76,7 +76,7 @@ class DownloadClass(object):
         cache["list"] = []
         cache["downloaddata"] = {}
 
-    def _get_all():
+    def _get_all(self):
         cache = StorageServer2.TimedStorage("download")
         try:
             result = cache["downloaddata"]
