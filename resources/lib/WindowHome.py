@@ -8,6 +8,7 @@ from dialogs.DialogBaseInfo import DialogBaseInfo
 from BaseClasses import *
 from common import *
 from WindowManager import wm
+from download import dc
 try:
     import simplejson
 except Exception:
@@ -52,8 +53,7 @@ class WindowHome(WindowXML, DialogBaseInfo):
             self.set_cloud_movie_list()
             self.set_account_categories()
             self.isLaunched = True
-        self.set_download_list_progress()
-        self.set_download_manager_list()
+        self.set_download_list()
 
     def onAction(self, action):
         if (action.getId() == 10 or action.getId() == 92):
@@ -263,44 +263,68 @@ class WindowHome(WindowXML, DialogBaseInfo):
         self.set_container(C_LEFTLIST_PAY_ABOUT, items[2:])
 
     @run_async
-    def set_download_list_progress(self):
-        items = [
-            {"label": u"侏罗纪公园",
-             "ProgressPercent": "75"},
-            {"label": u"侏罗纪公园",
-             "ProgressPercent": "60"},
-            {"label": u"侏罗纪公园",
-             "ProgressPercent": "100"},
-            {"label": u"侏罗纪公园",
-             "ProgressPercent": "98"},
-            {"label": u"侏罗纪公园",
-             "ProgressPercent": "30"},
-            {"label": u"侏罗纪公园",
-             "ProgressPercent": "80"},
-            {"label": u"侏罗纪公园",
-             "ProgressPercent": "98"}]
-        self.set_container(C_LIST_ACCOUNT_DOWNLOAD, items)
+    def set_download_list(self):
+        data = self.get_download_list()
+        lists = data["viewInfo"]
+        if not lists:
+            self.window.setProperty("DownloadListIsEmpty", "1")
+            return
+        items_1 = []
+        items_2 = []
+        for item in lists:
+            percent = item["percent"]
+            if percent == "100":
+                status = "done"
+            else:
+                status = "ing"
+            liz_1 = {"label": item["title"].decode("utf8"),
+                     "cid": item["cid"],
+                     "ProgressPercent": percent}
+            liz_2 = {"label": percent + "%",
+                     "cid": item["cid"],
+                     "DownloadStatus": status}
+            items_1.append(liz_1)
+            items_2.append(liz_2)
         self.window.setProperty("AccountContent", "download")
+        self.set_container(C_LIST_ACCOUNT_DOWNLOAD, items_1)
+        self.set_container(C_LIST_DOWNLOAD_STATUS, items_2)
+        self.set_container(C_LIST_DOWNLOAD_DEL, items_2)
+        self.download_progress()
+        return
+
+    def download_progress(self):
+        control_download = self.getControl(C_LIST_ACCOUNT_DOWNLOAD)
+        control_status = self.getControl(C_LIST_DOWNLOAD_STATUS)
+        control_del = self.getControl(C_LIST_DOWNLOAD_DEL)
+        length = control_download.size()
+        while True:
+            xbmc.sleep(5000)
+            for i in range(length):
+                item_download = control_download.getListItem(i)
+                item_status = control_status.getListItem(i)
+                item_del = control_del.getListItem(i)
+                self.update_download_progress(item_download, item_status, item_del)
 
     @run_async
-    def set_download_manager_list(self):
-        items = [
-            {"label": "75%",
-             "DownloadStatus": "ing"},
-            {"label": "60%",
-             "DownloadStatus": "ing"},
-            {"label": "100%",
-             "DownloadStatus": "done"},
-            {"label": "98%",
-             "DownloadStatus": "ing"},
-            {"label": "30%",
-             "DownloadStatus": "ing"},
-            {"label": "80%",
-             "DownloadStatus": "ing"},
-            {"label": "98%",
-             "DownloadStatus": "ing"}]
-        self.set_container(C_LIST_DOWNLOAD_STATUS, items)
-        self.set_container(C_LIST_DOWNLOAD_DEL, items)
+    def update_download_progress(self, downloadItem, statusItem, delItem):
+        percent = downloadItem.getProperty("ProgressPercent")
+        if percent == "100":
+            return
+        percent = str(int(percent) + 2)
+        if percent == "100":
+            statusItem.setProperty("DownloadStatus", "done")
+            delItem.setProperty("DownloadStatus", "done")
+        downloadItem.setProperty("ProgressPercent", percent)
+        statusItem.setLabel(percent + "%")
+        self.update_download_info(downloadItem)
+        return
+
+    def update_download_info(self, listitem):
+        cid = listitem.getProperty("cid")
+        vid = cid
+        title = listitem.getLabel()
+        percent = listitem.getProperty("ProgressPercent")
+        dc.add_download([{"cid": cid, "vid": vid, "percent": percent, "title": title}])
 
     def get_local_movie_list(self, strFilter):
         if strFilter == "new":
@@ -416,3 +440,6 @@ class WindowHome(WindowXML, DialogBaseInfo):
 
     def get_cloud_movie_list_network(self):
         return get_json_file(ADDON_PATH + "/data/movie_list_network.json")
+
+    def get_download_list(self):
+        return dc.get_all_download()
