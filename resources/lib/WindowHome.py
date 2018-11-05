@@ -181,6 +181,16 @@ class WindowHome(WindowXML, DialogBaseInfo):
         elif status == "pause":
             self.listitem.setProperty("DownloadStatus", "ing")
 
+    @ch.click(C_LIST_DOWNLOAD_DEL)
+    def del_download_item(self):
+        cid = self.listitem.getProperty("cid")
+        pos = self.control.getSelectedPosition()
+        self.remove_download_item(pos)
+        dc.remove_download(cid)
+        if self.getControl(C_LIST_ACCOUNT_DOWNLOAD).size() == 0:
+            self.window.setProperty("DownloadListIsEmpty", "1")
+            self.setFocusId(C_LEFTLIST_DOWNLOAD_APP)
+
     @ch.focus(C_LIST_DOWNLOAD_STATUS)
     def status_list_change_pos(self):
         control = self.getControl(C_LIST_DOWNLOAD_DEL)
@@ -275,6 +285,7 @@ class WindowHome(WindowXML, DialogBaseInfo):
             percent = item["percent"]
             if percent == "100":
                 status = "done"
+                continue
             else:
                 status = "ing"
             liz_1 = {"label": item["title"].decode("utf8"),
@@ -285,6 +296,10 @@ class WindowHome(WindowXML, DialogBaseInfo):
                      "DownloadStatus": status}
             items_1.append(liz_1)
             items_2.append(liz_2)
+        if not items_1:
+            self.window.setProperty("DownloadListIsEmpty", "1")
+            return
+        self.window.clearProperty("DownloadListIsEmpty")
         self.window.setProperty("AccountContent", "download")
         self.set_container(C_LIST_ACCOUNT_DOWNLOAD, items_1)
         self.set_container(C_LIST_DOWNLOAD_STATUS, items_2)
@@ -296,35 +311,49 @@ class WindowHome(WindowXML, DialogBaseInfo):
         control_download = self.getControl(C_LIST_ACCOUNT_DOWNLOAD)
         control_status = self.getControl(C_LIST_DOWNLOAD_STATUS)
         control_del = self.getControl(C_LIST_DOWNLOAD_DEL)
-        length = control_download.size()
         while True:
             xbmc.sleep(5000)
+            length = control_download.size()
+            if length == 0:
+                continue
             for i in range(length):
-                item_download = control_download.getListItem(i)
-                item_status = control_status.getListItem(i)
-                item_del = control_del.getListItem(i)
-                self.update_download_progress(item_download, item_status, item_del)
+                try:
+                    item_download = control_download.getListItem(i)
+                    item_status = control_status.getListItem(i)
+                    item_del = control_del.getListItem(i)
+                    self.update_download_progress(item_download, item_status, item_del, i)
+                except Exception:
+                    print_exc()
+                    continue
 
     @run_async
-    def update_download_progress(self, downloadItem, statusItem, delItem):
+    def update_download_progress(self, downloadItem, statusItem, delItem, index):
         percent = downloadItem.getProperty("ProgressPercent")
-        if percent == "100":
+        status = statusItem.getProperty("DownloadStatus")
+        if percent == "100" or status != "ing":
             return
         percent = str(int(percent) + 2)
+        downloadItem.setProperty("ProgressPercent", percent)
+        statusItem.setLabel(percent + "%")
+        self.update_download_info(downloadItem, statusItem, delItem, index)
+        return
+
+    def update_download_info(self, downloadItem, statusItem, delItem, index):
+        cid = downloadItem.getProperty("cid")
+        vid = cid
+        title = downloadItem.getLabel()
+        percent = downloadItem.getProperty("ProgressPercent")
+        dc.add_download([{"cid": cid, "vid": vid, "percent": percent, "title": title}])
         if percent == "100":
             statusItem.setProperty("DownloadStatus", "done")
             delItem.setProperty("DownloadStatus", "done")
-        downloadItem.setProperty("ProgressPercent", percent)
-        statusItem.setLabel(percent + "%")
-        self.update_download_info(downloadItem)
-        return
+            self.remove_download_item(index)
 
-    def update_download_info(self, listitem):
-        cid = listitem.getProperty("cid")
-        vid = cid
-        title = listitem.getLabel()
-        percent = listitem.getProperty("ProgressPercent")
-        dc.add_download([{"cid": cid, "vid": vid, "percent": percent, "title": title}])
+    def remove_download_item(self, index):
+        xbmc.sleep(300)
+        self.getControl(C_LIST_ACCOUNT_DOWNLOAD).removeItem(index)
+        self.getControl(C_LIST_DOWNLOAD_STATUS).removeItem(index)
+        self.getControl(C_LIST_DOWNLOAD_DEL).removeItem(index)
 
     def get_local_movie_list(self, strFilter):
         if strFilter == "new":
