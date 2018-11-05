@@ -168,9 +168,8 @@ class WindowHome(WindowXML, DialogBaseInfo):
         icon = self.listitem.getProperty("icon")
         resource_type = self.listitem.getProperty("type")
         path = self.listitem.getProperty("path")
-        if resource_type == "local":
-            icon = icon.replace(MOVIE_DATA_PATH, "")
-            path = path.replace(MOVIE_DATA_PATH, "")
+        icon = icon.replace(MOVIE_DATA_PATH, "")
+        path = path.replace(MOVIE_DATA_PATH, "")
         vid = self.listitem.getProperty("vid")
         wm.open_movie_detail(prev_window=None, title=title, icon=icon, video_id=vid, resource_type=resource_type, path=path)
 
