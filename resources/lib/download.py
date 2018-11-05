@@ -63,13 +63,13 @@ class DownloadClass(object):
             del cidlist[cidlist.index(viewInfo[0]["cid"])]
             cache["list"] = cidlist
         except Exception:
-            cache["list"] = []
+            print_exc()
         try:
             cachedata = cache["downloaddata"]
             del cachedata[viewInfo[0]["cid"]]
             cache["downloaddata"] = cachedata
         except Exception:
-            cache["downloaddata"] = {}
+            print_exc()
 
     def _reset(self):
         cache = StorageServer2.TimedStorage("download")
