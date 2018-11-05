@@ -7,7 +7,7 @@ from OnClickHandler import OnClickHandler
 from dialogs.DialogBaseInfo import DialogBaseInfo
 from BaseClasses import *
 from common import *
-from pinyin import PinYinAPI
+from WindowManager import wm
 from follow import fc
 from download import dc
 import VideoPlayer
@@ -85,6 +85,18 @@ class WindowMovieDetail(WindowXML, DialogBaseInfo):
         self.control.setVisible(False)
         self.setFocusId(C_BUTTON_PLAY)
         dc.remove_download(self.vid)
+
+    @check_multiclick
+    @ch.click(C_LIST_RECOMMEMD)
+    def open_new_detail(self):
+        title = self.listitem.getProperty("label")
+        icon = self.listitem.getProperty("icon")
+        resource_type = self.listitem.getProperty("type")
+        path = self.listitem.getProperty("path")
+        icon = icon.replace(MOVIE_DATA_PATH, "")
+        path = path.replace(MOVIE_DATA_PATH, "")
+        vid = self.listitem.getProperty("vid")
+        wm.open_movie_detail(prev_window=None, title=title, icon=icon, video_id=vid, resource_type=resource_type, path=path)
 
     def parse_local_movie_info(self, path):
         data = self.get_local_movie_detail_json(path)
