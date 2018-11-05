@@ -9,6 +9,7 @@ from BaseClasses import *
 from common import *
 from pinyin import PinYinAPI
 from follow import fc
+from download import dc
 import VideoPlayer
 
 ch = OnClickHandler()
@@ -24,6 +25,7 @@ C_LIST_RECOMMEMD = 6000
 C_BUTTON_PLAY = 201
 C_BUTTON_FOLLOW = 202
 C_BUTTON_DEL = 203
+C_PROGRESS_DOWNLOAD = 9001
 
 
 class WindowMovieDetail(WindowXML, DialogBaseInfo):
@@ -40,13 +42,9 @@ class WindowMovieDetail(WindowXML, DialogBaseInfo):
 
     def onInit(self):
         self.window = xbmcgui.Window(xbmcgui.getCurrentWindowId())
-        if self.type == "local":
-            self.parse_local_movie_info(self.path)
-        elif self.type == "cloud":
-            self.getControl(C_BUTTON_PLAY).setLabel(u"下  载")
+        if self.type == "cloud":
             self.getControl(C_BUTTON_DEL).setVisible(False)
-            name_pinyin = PinYinAPI.getPinYinFirstLetter(self.title.decode('utf-8'))
-            self.parse_cloud_movie_info(name_pinyin)
+        self.parse_local_movie_info(self.path)
 
     def onAction(self, action):
         super(WindowMovieDetail, self).onAction(action)
@@ -60,10 +58,14 @@ class WindowMovieDetail(WindowXML, DialogBaseInfo):
     @ch.click(C_BUTTON_PLAY)
     def video_action(self):
         button_label = self.getControl(C_BUTTON_PLAY).getLabel()
-        if self.type == "local":
+        if button_label == u"播  放":
             PLAYER.play(self.file_path, self.vid, self.detaildata)
-        elif self.type == "cloud":
-            pass
+        if button_label == u"下  载":
+            percent = "8"
+            self.window.setProperty("IsDownloading", "1")
+            self.window.setProperty("DownloadPercentInt", percent)
+            self.download_progress()
+            dc.add_download([{"cid": self.vid, "vid": self.vid, "percent": percent, "title": self.title}])
 
     @check_multiclick
     @ch.click(C_BUTTON_FOLLOW)
@@ -76,6 +78,14 @@ class WindowMovieDetail(WindowXML, DialogBaseInfo):
         if HOME.getProperty("FollowToVideoDetail"):
             HOME.setProperty("FollowUpdate", "1")
 
+    @check_multiclick
+    @ch.click(C_BUTTON_DEL)
+    def del_local_movie(self):
+        self.getControl(C_BUTTON_PLAY).setLabel(u"下  载")
+        self.control.setVisible(False)
+        self.setFocusId(C_BUTTON_PLAY)
+        dc.remove_download(self.vid)
+
     def parse_local_movie_info(self, path):
         data = self.get_local_movie_detail_json(path)
         poster_path = data["movie"]["poster"]
@@ -84,6 +94,7 @@ class WindowMovieDetail(WindowXML, DialogBaseInfo):
         actors = data["movie"]["actors"]
         self.file_path = path + data["movie"]["url"]
         stars = self.get_stars_from_score(str(int(score) * 2))
+        self.check_download(self.vid)
         self.check_follow(self.vid)
         self.parse_local_recommend_list()
         self.window.setProperty("PosterImage", path + poster_path)
@@ -145,24 +156,41 @@ class WindowMovieDetail(WindowXML, DialogBaseInfo):
             self.window.clearProperty("Movie.IsFollow")
             self.getControl(C_BUTTON_FOLLOW).setLabel(u"收  藏")
 
+    def check_download(self, cid):
+        data = dc.get_one_download(cid)
+        if data:
+            percent = data["viewInfo"][0]["percent"]
+            if percent != "100":
+                self.window.setProperty("IsDownloading", "1")
+                self.window.setProperty("DownloadPercentInt", percent)
+                self.download_progress()
+
+    @run_async
+    def download_progress(self):
+        count = int(self.window.getProperty("DownloadPercentInt"))
+        control_progress = self.getControl(C_PROGRESS_DOWNLOAD)
+        while True:
+            xbmc.sleep(100)
+            count += 2
+            if count > 100:
+                count = 100
+                break
+            control_progress.setPercent(float(count))
+            self.window.setProperty("DownloadPercentInt", str(count))
+        self.window.clearProperty("IsDownloading")
+        self.getControl(C_BUTTON_PLAY).setLabel(u"播  放")
+        self.getControl(C_BUTTON_DEL).setVisible(True)
+        self.setFocusId(C_BUTTON_PLAY)
+        dc.add_download([{"cid": self.vid, "vid": self.vid, "percent": str(count), "title": self.title}])
+
     def set_actor_list(self, lists):
         listitems = []
-        if self.type == "local":
-            for (count, item) in enumerate(lists):
-                if count == len(lists) - 1:
-                    liz = {"label": item}
-                else:
-                    liz = {"label": item + u"、"}
-                listitems.append(liz)
-        elif self.type == "cloud":
-            for (count, item) in enumerate(lists):
-                if item["name"] == "null":
-                    continue
-                if count == len(lists) - 1:
-                    liz = {"label": item["name"]}
-                else:
-                    liz = {"label": item["name"] + u"、"}
-                listitems.append(liz)
+        for (count, item) in enumerate(lists):
+            if count == len(lists) - 1:
+                liz = {"label": item}
+            else:
+                liz = {"label": item + u"、"}
+            listitems.append(liz)
         self.set_container(C_LIST_ACTORS, listitems)
 
     def set_detail_data(self, json_query, video_type):
