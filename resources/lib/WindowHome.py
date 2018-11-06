@@ -32,6 +32,7 @@ ADDON_ID = ADDON.getAddonInfo('id')
 ADDON_PATH = ADDON.getAddonInfo('path').decode("utf-8")
 ADDON_DATA_PATH = xbmc.translatePath("special://profile/addon_data/%s" % ADDON_ID).decode("utf-8")
 MOVIE_DATA_PATH = "/storage/udisk0/part1/"
+HOME = xbmcgui.Window(10000)
 
 
 class WindowHome(WindowXML, DialogBaseInfo):
@@ -43,15 +44,18 @@ class WindowHome(WindowXML, DialogBaseInfo):
         self.cloud_filter = "new"
         self.local_filter_pos = 0
         self.cloud_filter_pos = 0
+        self.downloadStatusData = None
 
     def onInit(self):
         self.window = xbmcgui.Window(xbmcgui.getCurrentWindowId())
+        self.downloadStatusData = self.get_download_status_list()
         if not self.isLaunched:
             self.set_local_movie_categories()
             self.set_local_movie_list()
             self.set_cloud_movie_categories()
             self.set_cloud_movie_list()
             self.set_account_categories()
+            self.update_local_movie_list()
             self.isLaunched = True
         self.set_download_list()
 
@@ -227,9 +231,13 @@ class WindowHome(WindowXML, DialogBaseInfo):
         videos = data['localList']
         for video in videos:
             video_path = video['url']
+            vid = video_path.replace("/", "")
+            status = self.get_movie_download_status(vid)
+            if status != "1":
+                continue
             item = {"label": video['name'],
                     "icon": MOVIE_DATA_PATH + video['imgUrl'],
-                    "vid": video_path.replace("/", ""),
+                    "vid": vid,
                     "path": MOVIE_DATA_PATH + video['url'],
                     "type": "local"}
             items.append(item)
@@ -271,6 +279,17 @@ class WindowHome(WindowXML, DialogBaseInfo):
              "CurrentItem": "2"}]
         self.set_container(C_LEFTLIST_DOWNLOAD_APP, items[:2])
         self.set_container(C_LEFTLIST_PAY_ABOUT, items[2:])
+
+    @run_async
+    def update_local_movie_list(self):
+        while True:
+            xbmc.sleep(5000)
+            if HOME.getProperty("LocalMovieUpdated"):
+                focusId = self.getFocusId()
+                self.set_local_movie_list(self.local_filter)
+                if focusId == C_LIST_LOCAL_MOVIE:
+                    self.setFocusId(C_LIST_LOCAL_MOVIE)
+                HOME.clearProperty("LocalMovieUpdated")
 
     @run_async
     def set_download_list(self):
@@ -348,12 +367,25 @@ class WindowHome(WindowXML, DialogBaseInfo):
             statusItem.setProperty("DownloadStatus", "done")
             delItem.setProperty("DownloadStatus", "done")
             self.remove_download_item(index)
+            self.update_movie_download_status(cid, "1")
+            HOME.setProperty("LocalMovieUpdated", "1")
 
     def remove_download_item(self, index):
         xbmc.sleep(300)
         self.getControl(C_LIST_ACCOUNT_DOWNLOAD).removeItem(index)
         self.getControl(C_LIST_DOWNLOAD_STATUS).removeItem(index)
         self.getControl(C_LIST_DOWNLOAD_DEL).removeItem(index)
+
+    def get_movie_download_status(self, cid):
+        data = self.downloadStatusData
+        status = data["data"][cid]["status"]
+        return status
+
+    def update_movie_download_status(self, cid, status):
+        data = self.downloadStatusData
+        data["data"][cid]["status"] = status
+        path = ADDON_PATH + "/data/download_list.json"
+        write_json_file(path, data)
 
     def get_local_movie_list(self, strFilter):
         if strFilter == "new":
@@ -472,3 +504,6 @@ class WindowHome(WindowXML, DialogBaseInfo):
 
     def get_download_list(self):
         return dc.get_all_download()
+
+    def get_download_status_list(self):
+        return get_json_file(ADDON_PATH + "/data/download_list.json")

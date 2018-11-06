@@ -39,11 +39,11 @@ class WindowMovieDetail(WindowXML, DialogBaseInfo):
         self.path = MOVIE_DATA_PATH + kwargs.get("path")
         self.file_path = ""
         self.detaildata = {}
+        self.downloadStatusData = None
 
     def onInit(self):
         self.window = xbmcgui.Window(xbmcgui.getCurrentWindowId())
-        if self.type == "cloud":
-            self.getControl(C_BUTTON_DEL).setVisible(False)
+        self.downloadStatusData = self.get_download_status_list()
         self.parse_local_movie_info(self.path)
 
     def onAction(self, action):
@@ -85,6 +85,8 @@ class WindowMovieDetail(WindowXML, DialogBaseInfo):
         self.control.setVisible(False)
         self.setFocusId(C_BUTTON_PLAY)
         dc.remove_download(self.vid)
+        self.update_movie_download_status(self.vid, "0")
+        HOME.setProperty("LocalMovieUpdated", "1")
 
     @check_multiclick
     @ch.click(C_LIST_RECOMMEMD)
@@ -177,6 +179,14 @@ class WindowMovieDetail(WindowXML, DialogBaseInfo):
                 self.window.setProperty("DownloadPercentInt", percent)
                 self.getControl(C_PROGRESS_DOWNLOAD).setPercent(float(int(percent)))
                 self.download_progress()
+        else:
+            status = self.get_movie_download_status(cid)
+            if status == "1":
+                self.getControl(C_BUTTON_PLAY).setLabel(u"播  放")
+                self.getControl(C_BUTTON_DEL).setVisible(True)
+            elif status == "0":
+                self.getControl(C_BUTTON_PLAY).setLabel(u"下  载")
+                self.getControl(C_BUTTON_DEL).setVisible(False)
 
     @run_async
     def download_progress(self):
@@ -196,6 +206,8 @@ class WindowMovieDetail(WindowXML, DialogBaseInfo):
         self.getControl(C_BUTTON_DEL).setVisible(True)
         self.setFocusId(C_BUTTON_PLAY)
         dc.add_download([{"cid": self.vid, "vid": self.vid, "percent": str(count), "title": self.title}])
+        self.update_movie_download_status(self.vid, "1")
+        HOME.setProperty("LocalMovieUpdated", "1")
 
     def set_actor_list(self, lists):
         listitems = []
@@ -220,6 +232,17 @@ class WindowMovieDetail(WindowXML, DialogBaseInfo):
             result["path"] = ""
         result["type"] = video_type
         return result
+
+    def get_movie_download_status(self, cid):
+        data = self.downloadStatusData
+        status = data["data"][cid]["status"]
+        return status
+
+    def update_movie_download_status(self, cid, status):
+        data = self.downloadStatusData
+        data["data"][cid]["status"] = status
+        path = ADDON_PATH + "/data/download_list.json"
+        write_json_file(path, data)
 
     def get_stars_from_score(self, score):
         if not score:
@@ -257,3 +280,6 @@ class WindowMovieDetail(WindowXML, DialogBaseInfo):
 
     def get_cloud_movie_detail_json(self, name):
         return get_json_file(ADDON_PATH + "/data/" + name + "/desc.json")
+
+    def get_download_status_list(self):
+        return get_json_file(ADDON_PATH + "/data/download_list.json")
