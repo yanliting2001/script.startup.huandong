@@ -166,6 +166,11 @@ class WindowHome(WindowXML, DialogBaseInfo):
             self.window.setProperty("AccountContent", "about")
             self.getControl(C_LABEL_ACCOUNT_CONTENT).setLabel(u"关于我们")
 
+    @ch.action("contextmenu", "*")
+    def active_android_setting(self):
+        json = {"cmp": {"pkg": "com.projector.settings", "class": "com.txbox.settings.launcher.systemsettings.SystemSettingsMain"}}
+        xbmc.executebuiltin('XBMC.StartAndroidActivityByJsonIntent("{json}")'.format(json=simplejson.dumps(json)))
+
     @ch.click([C_LIST_LOCAL_MOVIE, C_LIST_CLOUD_MOVIE])
     def open_movie_info_window(self):
         title = self.listitem.getProperty("label")
