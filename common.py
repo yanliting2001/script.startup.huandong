@@ -140,3 +140,9 @@ def time_format_number(strTime):
         return str(int(strTime[:-3]) * 60 + int(strTime[3:]))
     elif len(strTime) == 2:
         return strTime
+
+
+def write_json_file(filename, data):
+    with open(filename, 'w') as f:
+        simplejson.dump(data, f)
+        log("write file finished...")
