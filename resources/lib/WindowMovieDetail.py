@@ -147,6 +147,7 @@ class WindowMovieDetail(WindowXML, DialogBaseInfo):
             liz = {"label": item["name"],
                    "icon": MOVIE_DATA_PATH + item["imgUrl"],
                    "path": MOVIE_DATA_PATH + item["url"],
+                   "vid": item["url"].replace("/", ""),
                    "type": "local"}
             listitems.append(liz)
         self.set_container(C_LIST_RECOMMEMD, listitems)
