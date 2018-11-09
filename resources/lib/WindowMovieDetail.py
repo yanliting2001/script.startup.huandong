@@ -180,6 +180,10 @@ class WindowMovieDetail(WindowXML, DialogBaseInfo):
                 self.window.setProperty("DownloadPercentInt", percent)
                 self.getControl(C_PROGRESS_DOWNLOAD).setPercent(float(int(percent)))
                 self.download_progress()
+        elif cid in ["htpy", "mtyj"]:
+            self.getControl(C_BUTTON_PLAY).setLabel(u"播  放")
+            self.getControl(C_BUTTON_FOLLOW).setVisible(False)
+            self.getControl(C_BUTTON_DEL).setVisible(False)
         else:
             status = self.get_movie_download_status(cid)
             if status == "1":
