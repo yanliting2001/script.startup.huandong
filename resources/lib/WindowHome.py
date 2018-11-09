@@ -16,6 +16,7 @@ except Exception:
 
 ch = OnClickHandler()
 C_LIST_NAVIGATION = 9000
+C_LIST_LOCAL_BANNER = 200001
 C_LEFTLIST_LOCAL_CATEGORIES = 200104
 C_LEFTLIST_CLOUD_CATEGORIES = 300102
 C_LEFTLIST_DOWNLOAD_APP = 400101
@@ -51,6 +52,7 @@ class WindowHome(WindowXML, DialogBaseInfo):
         self.downloadStatusData = self.get_download_status_list()
         if not self.isLaunched:
             self.set_local_movie_categories()
+            self.set_local_movie_banner()
             self.set_local_movie_list()
             self.set_cloud_movie_categories()
             self.set_cloud_movie_list()
@@ -171,7 +173,7 @@ class WindowHome(WindowXML, DialogBaseInfo):
         json = {"cmp": {"pkg": "com.projector.settings", "class": "com.txbox.settings.launcher.systemsettings.SystemSettingsMain"}}
         xbmc.executebuiltin('XBMC.StartAndroidActivityByJsonIntent("{json}")'.format(json=simplejson.dumps(json)))
 
-    @ch.click([C_LIST_LOCAL_MOVIE, C_LIST_CLOUD_MOVIE])
+    @ch.click([C_LIST_LOCAL_BANNER, C_LIST_LOCAL_MOVIE, C_LIST_CLOUD_MOVIE])
     def open_movie_info_window(self):
         title = self.listitem.getProperty("label")
         icon = self.listitem.getProperty("icon")
@@ -219,6 +221,22 @@ class WindowHome(WindowXML, DialogBaseInfo):
     def cloud_filter_up_down(self, item):
         self.cloud_filter = item.getProperty("key")
         self.set_cloud_movie_list(self.cloud_filter)
+
+    def set_local_movie_banner(self):
+        items = [
+            {"label": u"魔兽",
+             "icon": MOVIE_DATA_PATH + "image/mshou_266x380.jpg",
+             "banner": MOVIE_DATA_PATH + "image/mshou_712x231.jpg",
+             "vid": "mshou",
+             "path": MOVIE_DATA_PATH + "mshou/",
+             "type": "local"},
+            {"label": u"掠夺者",
+             "icon": MOVIE_DATA_PATH + "image/ldz_266x380.jpg",
+             "banner": MOVIE_DATA_PATH + "image/ldz_712x231.jpg",
+             "vid": "ldz",
+             "path": MOVIE_DATA_PATH + "ldz/",
+             "type": "local"}]
+        self.set_container(C_LIST_LOCAL_BANNER, items)
 
     def set_local_movie_categories(self):
         data = self.get_local_movie_categories()
