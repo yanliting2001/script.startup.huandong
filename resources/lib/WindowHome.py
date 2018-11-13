@@ -277,11 +277,14 @@ class WindowHome(WindowXML, DialogBaseInfo):
         videos = data["localList"]
         for video in videos:
             video_path = video['url']
+            vid = video_path.replace("/", "")
+            status = self.get_movie_download_status(vid)
             item = {"label": video['name'],
                     "icon": MOVIE_DATA_PATH + video['imgUrl'],
-                    "vid": video_path.replace("/", ""),
+                    "vid": vid,
                     "path": MOVIE_DATA_PATH + video['url'],
-                    "type": "cloud"}
+                    "type": "cloud",
+                    "DownloadStatus": status}
             items.append(item)
         self.set_container(C_LIST_CLOUD_MOVIE, items)
 
