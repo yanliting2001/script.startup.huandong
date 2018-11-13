@@ -13,6 +13,7 @@ MOVIE_DETAIL_XML = "script-DialogVideoDetail.xml"
 FOLLOW_XML = "script-DialogFollow.xml"
 HISTORY_XML = "script-DialogHistory.xml"
 SEARCH_XML = "script-DialogSearch.xml"
+VIDEO_PLOT_XML = "script-DialogVideoPlot.xml"
 
 
 class WindowManager(object):
@@ -73,6 +74,14 @@ class WindowManager(object):
         """
         from WindowSearch import WindowSearch
         dialog = WindowSearch(SEARCH_XML, ADDON_PATH)
+        self.open_dialog(dialog, prev_window)
+
+    def open_video_plot(self, plot, prev_window=None):
+        """
+        open video plot dialog, deal with window stack
+        """
+        from dialogs.DialogVideoPlot import DialogVideoPlot
+        dialog = DialogVideoPlot(VIDEO_PLOT_XML, ADDON_PATH, plot=plot)
         self.open_dialog(dialog, prev_window)
 
     def open_dialog(self, dialog, prev_window):
