@@ -26,6 +26,7 @@ C_BUTTON_PLAY = 201
 C_BUTTON_FOLLOW = 202
 C_BUTTON_DEL = 203
 C_PROGRESS_DOWNLOAD = 9001
+C_BUTTON_PLOT = 4001
 
 
 class WindowMovieDetail(WindowXML, DialogBaseInfo):
@@ -99,6 +100,12 @@ class WindowMovieDetail(WindowXML, DialogBaseInfo):
         path = path.replace(MOVIE_DATA_PATH, "")
         vid = self.listitem.getProperty("vid")
         wm.open_movie_detail(prev_window=None, title=title, icon=icon, video_id=vid, resource_type=resource_type, path=path)
+
+    @check_multiclick
+    @ch.click(C_BUTTON_PLOT)
+    def open_plot_dialog(self):
+        plot = self.window.getProperty("MoviePlot")
+        wm.open_video_plot(prev_window=None, plot=plot)
 
     def parse_local_movie_info(self, path):
         data = self.get_local_movie_detail_json(path)
